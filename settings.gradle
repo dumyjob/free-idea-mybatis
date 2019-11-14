@@ -1,2 +1,23 @@
-rootProject.name = 'free-idea-mybatis'
+pluginManagement {
+    repositories {
+        
+        maven {
+            url 'https://maven.aliyun.com/repository/gradle-plugin'
+        }
+        maven {
+            
+            url 'https://maven.aliyun.com/repository/public/'
+        }
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+        google()
 
+        jcenter()
+    }
+}
+
+rootProject.name = 'free-idea-mybatis'
