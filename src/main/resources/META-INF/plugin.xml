@@ -29,6 +29,7 @@
         <dom.fileDescription implementation="com.wuzhizhan.mybatis.dom.description.ConfigurationDescription"/>
         <definitionsSearch implementation="com.wuzhizhan.mybatis.definitionsearch.MapperDefinitionSearch"/>
         <projectService serviceImplementation="com.wuzhizhan.mybatis.service.JavaService"/>
+        <projectService serviceImplementation="com.wuzhizhan.mybatis.service.IbatisService"/>
         <projectService serviceImplementation="com.wuzhizhan.mybatis.service.AnnotationService"/>
         <projectService serviceImplementation="com.wuzhizhan.mybatis.service.EditorService"/>
         <projectService serviceImplementation="com.wuzhizhan.mybatis.alias.AliasFacade"/>
@@ -36,6 +37,8 @@
         <projectService serviceImplementation="com.wuzhizhan.mybatis.service.TableInfoService"/>
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.wuzhizhan.mybatis.provider.MapperLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.wuzhizhan.mybatis.provider.IbatisDaoLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="XML"
                                         implementationClass="com.wuzhizhan.mybatis.provider.StatementLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="JAVA"
