@@ -1,6 +1,7 @@
 package com.wuzhizhan.mybatis.util;
 
 import com.intellij.psi.PsiCodeBlock;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiStatement;
 import com.intellij.psi.xml.XmlFile;
@@ -49,4 +50,13 @@ public class IbatisUtils {
         XmlTag rootTag = xmlFile.getRootTag();
         return rootTag != null && StringUtils.equals(rootTag.getName(), SQL_MAP_ROOT_TAG);
     }
+
+    public static boolean isIbatisFile(PsiFile file){
+        if(file instanceof  XmlFile){
+            return isIbatisFile((XmlFile) file);
+        }
+
+        return false;
+    }
+
 }

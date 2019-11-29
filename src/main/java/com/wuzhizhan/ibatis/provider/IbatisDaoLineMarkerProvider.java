@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 /**
- * author: Victor von Doom
+ * @author  Victor von Doom
  * 提供ibatis Dao method直接跳转到ibatis SqlMap中的方法的服务
  */
 public class IbatisDaoLineMarkerProvider extends RelatedItemLineMarkerProvider {

@@ -1,11 +1,15 @@
 package com.wuzhizhan.ibatis.util;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.xml.XmlElement;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.DomUtil;
 import com.wuzhizhan.ibatis.dom.model.SqlMap;
 import com.wuzhizhan.mybatis.dom.model.IdDomElement;
 import com.wuzhizhan.mybatis.util.DomUtils;
+import com.wuzhizhan.mybatis.util.IbatisUtils;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,6 +65,12 @@ public class SqlMapUtils {
         } else {
             throw new IllegalArgumentException("Unknown element");
         }
+    }
+
+
+    public static boolean isElementWithinMybatisFile(@NotNull PsiElement element) {
+        PsiFile psiFile = element.getContainingFile();
+        return element instanceof XmlElement && IbatisUtils.isIbatisFile(psiFile);
     }
 
 
