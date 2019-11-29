@@ -1,4 +1,4 @@
-package com.wuzhizhan.mybatis.service;
+package com.wuzhizhan.ibatis.service;
 
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
@@ -6,14 +6,16 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.util.Processor;
+import com.wuzhizhan.ibatis.dom.model.SqlMap;
+import com.wuzhizhan.ibatis.util.SqlMapUtils;
 import com.wuzhizhan.mybatis.dom.model.IdDomElement;
-import com.wuzhizhan.mybatis.dom.model.Map;
 import com.wuzhizhan.mybatis.util.IbatisUtils;
-import com.wuzhizhan.mybatis.util.MapperUtils;
-import com.wuzhizhan.mybatis.util.SqlMapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ *  author: Victor von Doom
+ */
 public class IbatisService {
 
     private Project project;
@@ -49,9 +51,9 @@ public class IbatisService {
         }
 
         // MapperUtils.findMappers还是可以使用,ibatis和mybatis定义的结构还是差不多
-        for (Map sqlMap : SqlMapUtils.findMappers(psiMethod.getProject())) {
+        for (SqlMap sqlMap : SqlMapUtils.findSqlMaps(psiMethod.getProject())) {
             for (IdDomElement domElement : sqlMap.getDaoElements()) {
-                if (StringUtils.equals(MapperUtils.getIdSignature(domElement), id)) {
+                if (StringUtils.equals(SqlMapUtils.getFullId(domElement), id)) {
                     processor.process(domElement);
                 }
             }

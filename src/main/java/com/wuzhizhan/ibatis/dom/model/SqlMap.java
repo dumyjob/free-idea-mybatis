@@ -1,14 +1,16 @@
-package com.wuzhizhan.mybatis.dom.model;
+package com.wuzhizhan.ibatis.dom.model;
 
 import com.intellij.util.xml.*;
+import com.wuzhizhan.mybatis.dom.model.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * @author yanglin
+ * @author : Victor von Doom
+ * 必须要有配套的DomFileDescription{@link com.wuzhizhan.ibatis.dom.description.SqlMapDescription }
  */
-public interface Map extends DomElement {
+public interface SqlMap extends DomElement {
 
     @NotNull
     @SubTagsList({"insert", "update", "delete", "select"})

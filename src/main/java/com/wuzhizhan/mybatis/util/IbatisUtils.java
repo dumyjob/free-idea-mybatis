@@ -3,11 +3,18 @@ package com.wuzhizhan.mybatis.util;
 import com.intellij.psi.PsiCodeBlock;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiStatement;
+import com.intellij.psi.xml.XmlFile;
+import com.intellij.psi.xml.XmlTag;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * @author Victor von Doom
+ */
 public class IbatisUtils {
 
     public static final String[] SQL_TEMPLATE_METHOD_NAMES = new String[] { "insert" , "update", "delete", "queryForObject", "queryForList"};
+
+    public static final String SQL_MAP_ROOT_TAG = "sqlMap";
 
     public static String findNamespaceWithId(PsiMethod psiMethod) {
         // 基于语义分析
@@ -31,5 +38,15 @@ public class IbatisUtils {
 
         // not found statement param
         return null;
+    }
+
+    /**
+     * xmlFile否是ibatis SqlMap文件
+     * @param xmlFile xml file
+     * @return true: 是ibatis SqlMap文件 false: 不是ibatis SqlMap文件
+     */
+    public static boolean isIbatisFile(XmlFile xmlFile){
+        XmlTag rootTag = xmlFile.getRootTag();
+        return rootTag != null && StringUtils.equals(rootTag.getName(), SQL_MAP_ROOT_TAG);
     }
 }

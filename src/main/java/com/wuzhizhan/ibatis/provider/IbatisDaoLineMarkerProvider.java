@@ -1,4 +1,4 @@
-package com.wuzhizhan.mybatis.provider;
+package com.wuzhizhan.ibatis.provider;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -11,8 +11,8 @@ import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.CommonProcessors;
 import com.intellij.util.xml.DomElement;
+import com.wuzhizhan.ibatis.service.IbatisService;
 import com.wuzhizhan.mybatis.dom.model.IdDomElement;
-import com.wuzhizhan.mybatis.service.IbatisService;
 import com.wuzhizhan.mybatis.util.Icons;
 import org.jetbrains.annotations.NotNull;
 
