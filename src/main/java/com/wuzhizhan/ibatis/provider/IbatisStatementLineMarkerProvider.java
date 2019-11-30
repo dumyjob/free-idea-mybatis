@@ -11,9 +11,8 @@ import com.intellij.util.xml.DomUtil;
 import com.wuzhizhan.ibatis.util.SqlMapUtils;
 import com.wuzhizhan.mybatis.dom.model.*;
 import com.wuzhizhan.mybatis.provider.SimpleLineMarkerProvider;
+import com.wuzhizhan.mybatis.util.IbatisUtils;
 import com.wuzhizhan.mybatis.util.Icons;
-import com.wuzhizhan.mybatis.util.JavaUtils;
-import com.wuzhizhan.mybatis.util.MapperUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -44,7 +43,7 @@ public class IbatisStatementLineMarkerProvider extends SimpleLineMarkerProvider<
     @Override
     public Optional<PsiMethod> apply(@NotNull XmlTag from) {
         DomElement domElement = DomUtil.getDomElement(from);
-        return null == domElement ? Optional.<PsiMethod>absent() : JavaUtils.findMethod(from.getProject(), (IdDomElement) domElement);
+        return null == domElement ? Optional.<PsiMethod>absent() : IbatisUtils.findMethod(from.getProject(), (IdDomElement) domElement);
     }
 
     private boolean isTargetType(PsiElement element) {

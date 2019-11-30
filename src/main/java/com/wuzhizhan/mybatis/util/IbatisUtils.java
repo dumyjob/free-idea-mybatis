@@ -1,12 +1,18 @@
 package com.wuzhizhan.mybatis.util;
 
-import com.intellij.psi.PsiCodeBlock;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiStatement;
+import com.google.common.base.Optional;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.FileIndex;
+import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.psi.*;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
+import com.wuzhizhan.ibatis.util.SqlMapUtils;
+import com.wuzhizhan.mybatis.dom.model.IdDomElement;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Victor von Doom
@@ -19,9 +25,8 @@ public class IbatisUtils {
 
     public static String findNamespaceWithId(PsiMethod psiMethod) {
         // 基于语义分析
-        // +TODO 查找ibatis Dao Method调用的sqlMap namespace.id
         PsiCodeBlock body = psiMethod.getBody();
-        // body maybe null in interface
+        //+TODO body maybe null in interface
         PsiStatement[] statements = body.getStatements();
 
         for(PsiStatement statement :  statements){
@@ -51,12 +56,61 @@ public class IbatisUtils {
         return rootTag != null && StringUtils.equals(rootTag.getName(), SQL_MAP_ROOT_TAG);
     }
 
-    public static boolean isIbatisFile(PsiFile file){
-        if(file instanceof  XmlFile){
-            return isIbatisFile((XmlFile) file);
-        }
-
-        return false;
+    public static boolean isIbatisFile(PsiFile file) {
+        return DomUtils.isXmlFile(file) && isIbatisFile((XmlFile) file);
     }
+
+
+    public static Optional<PsiMethod> findMethod(Project project, IdDomElement idDomElement){
+        // 通过ibatis statement找到对应的ibatis dao method
+        FileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+        String fullId = SqlMapUtils.getFullId(idDomElement);
+
+
+        List<PsiMethod> matches = new ArrayList<>();
+        fileIndex.iterateContent(psiFile -> {
+            if(!(psiFile instanceof PsiJavaFile)){
+                // 如果不是java文件,go on next
+                return true;
+            }
+
+            PsiJavaFile psiJavaFile = (PsiJavaFile) psiFile;
+            for(PsiClass psiClass : psiJavaFile.getClasses()){
+                if(psiClass.isInterface()){
+                    // 如果是interface, continue: 分析不了语义
+                    continue;
+                }
+
+                for(PsiMethod psiMethod : psiClass.getMethods()){
+                    PsiCodeBlock body = psiMethod.getBody();
+                    if(body == null){
+                        // 可能没有body, class是interface的情况
+                        continue;
+                    }
+                    PsiStatement[] statements = body.getStatements();
+                    for(PsiStatement statement : statements){
+                        String text = statement.getText();
+
+                        if(StringUtils.contains(text, fullId)){
+                            // 找到符合要求的PsiMethod
+                            matches.add(psiMethod);
+                        }
+                    }
+                }
+
+            }
+
+            return true;
+        }, psiFile -> {
+            // 过滤掉非.java文件
+            return psiFile !=null && psiFile instanceof  PsiJavaFile;
+        });
+
+
+        return CollectionUtils.isNotEmpty(matches) ? Optional.of(matches.get(0)) : Optional.absent();
+    }
+
+
+
 
 }
