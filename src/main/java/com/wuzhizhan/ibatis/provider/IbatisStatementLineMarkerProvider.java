@@ -2,7 +2,10 @@ package com.wuzhizhan.ibatis.provider;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import com.intellij.pom.Navigatable;
+import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
+import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
+import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
+import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.xml.XmlTag;
@@ -10,18 +13,17 @@ import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.DomUtil;
 import com.wuzhizhan.ibatis.util.SqlMapUtils;
 import com.wuzhizhan.mybatis.dom.model.*;
-import com.wuzhizhan.mybatis.provider.SimpleLineMarkerProvider;
 import com.wuzhizhan.mybatis.util.IbatisUtils;
 import com.wuzhizhan.mybatis.util.Icons;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import java.util.Collection;
 
 /**
  * @author Victor von Doom
  * 提供ibatis statement到Ibatis Dao method的跳转
  */
-public class IbatisStatementLineMarkerProvider extends SimpleLineMarkerProvider<XmlTag, PsiMethod> {
+public class IbatisStatementLineMarkerProvider extends RelatedItemLineMarkerProvider{
 
     private static final ImmutableList<Class<? extends GroupTwo>> TARGET_TYPES = ImmutableList.of(
             Select.class,
@@ -30,20 +32,33 @@ public class IbatisStatementLineMarkerProvider extends SimpleLineMarkerProvider<
             Delete.class
     );
 
+
     @Override
-    public boolean isTheElement(@NotNull PsiElement element) {
-        // 判断是否是需要处理的ibatis中的xml element
-        return element instanceof XmlTag
-                && SqlMapUtils.isElementWithinMybatisFile(element)
-                && isTargetType(element);
+    protected void collectNavigationMarkers(@NotNull PsiElement element, @NotNull Collection<? super RelatedItemLineMarkerInfo> result) {
+        if(!isTarget(element)){
+            return ;
+        }
+
+        DomElement domElement = DomUtil.getDomElement(element);
+        Optional<PsiMethod> processResult = IbatisUtils.findMethod(element.getProject(), (IdDomElement) domElement);
+
+        if(processResult.isPresent()){
+
+            NavigationGutterIconBuilder<PsiElement> builder =
+                    NavigationGutterIconBuilder.create(Icons.STATEMENT_LINE_MARKER_ICON)
+                            .setAlignment(GutterIconRenderer.Alignment.CENTER)
+                            .setTargets(processResult.get())
+                            .setTooltipTitle("Navigation to target in ibatis dao");
+
+            result.add(builder.createLineMarkerInfo(element));
+        }
+
+
     }
 
-
-    @NotNull
-    @Override
-    public Optional<PsiMethod> apply(@NotNull XmlTag from) {
-        DomElement domElement = DomUtil.getDomElement(from);
-        return null == domElement ? Optional.<PsiMethod>absent() : IbatisUtils.findMethod(from.getProject(), (IdDomElement) domElement);
+    private boolean isTarget(PsiElement element) {
+        // 判断是否是目标对象 select | update | insert | delete
+        return element instanceof XmlTag && SqlMapUtils.isElementWithinMybatisFile(element) && isTargetType(element);
     }
 
     private boolean isTargetType(PsiElement element) {
@@ -54,24 +69,4 @@ public class IbatisStatementLineMarkerProvider extends SimpleLineMarkerProvider<
         }
         return false;
     }
-
-
-    @NotNull
-    @Override
-    public Navigatable getNavigatable(@NotNull XmlTag from, @NotNull PsiMethod target) {
-        return (Navigatable) target.getNavigationElement();
-    }
-
-    @NotNull
-    @Override
-    public String getTooltip(@NotNull XmlTag from, @NotNull PsiMethod target) {
-        return "Data access object found - " + target.getContainingClass().getQualifiedName();
-    }
-
-    @NotNull
-    @Override
-    public Icon getIcon() {
-        return Icons.STATEMENT_LINE_MARKER_ICON;
-    }
-
 }

@@ -26,6 +26,7 @@ public abstract class SimpleLineMarkerProvider<F extends PsiElement, T> extends 
 
     @Override
     public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
+
     }
 
     @SuppressWarnings("unchecked")

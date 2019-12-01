@@ -3,6 +3,7 @@ package com.wuzhizhan.mybatis.util;
 import com.google.common.base.Optional;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.FileIndex;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.psi.*;
 import com.intellij.psi.xml.XmlFile;
@@ -63,12 +64,14 @@ public class IbatisUtils {
 
     public static Optional<PsiMethod> findMethod(Project project, IdDomElement idDomElement){
         // 通过ibatis statement找到对应的ibatis dao method
-        FileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
         String fullId = SqlMapUtils.getFullId(idDomElement);
 
 
         List<PsiMethod> matches = new ArrayList<>();
-        fileIndex.iterateContent(psiFile -> {
+
+        ProjectFileIndex.SERVICE.getInstance(project).iterateContent(virtualFile -> {
+            PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
+
             if(!(psiFile instanceof PsiJavaFile)){
                 // 如果不是java文件,go on next
                 return true;
@@ -80,6 +83,7 @@ public class IbatisUtils {
                     // 如果是interface, continue: 分析不了语义
                     continue;
                 }
+
 
                 for(PsiMethod psiMethod : psiClass.getMethods()){
                     PsiCodeBlock body = psiMethod.getBody();
@@ -101,11 +105,7 @@ public class IbatisUtils {
             }
 
             return true;
-        }, psiFile -> {
-            // 过滤掉非.java文件
-            return psiFile !=null && psiFile instanceof  PsiJavaFile;
         });
-
 
         return CollectionUtils.isNotEmpty(matches) ? Optional.of(matches.get(0)) : Optional.absent();
     }

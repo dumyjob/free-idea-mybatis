@@ -46,7 +46,7 @@ public class SqlMapUtils {
     @NotNull
     @NonNls
     public static String getNamespace(@NotNull DomElement element) {
-        return getNamespace(getMapper(element));
+        return getNamespace(getSqlMap(element));
     }
 
     @NotNull
@@ -58,7 +58,7 @@ public class SqlMapUtils {
 
     @NotNull
     @NonNls
-    public static SqlMap getMapper(@NotNull DomElement element) {
+    public static SqlMap getSqlMap(@NotNull DomElement element) {
         Optional<SqlMap> optional = Optional.ofNullable(DomUtil.getParentOfType(element, SqlMap.class, true));
         if (optional.isPresent()) {
             return optional.get();
