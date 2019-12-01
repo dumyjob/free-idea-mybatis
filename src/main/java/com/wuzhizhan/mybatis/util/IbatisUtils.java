@@ -64,7 +64,7 @@ public class IbatisUtils {
 
     public static Optional<PsiMethod> findMethod(Project project, IdDomElement idDomElement){
         // 通过ibatis statement找到对应的ibatis dao method
-        String fullId = SqlMapUtils.getFullId(idDomElement);
+        String fullId = "\""+ SqlMapUtils.getFullId(idDomElement) +"\"";
 
 
         List<PsiMethod> matches = new ArrayList<>();

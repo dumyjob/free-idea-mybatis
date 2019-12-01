@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.xml.DomElement;
+import com.intellij.util.xml.DomManager;
 import com.intellij.util.xml.DomUtil;
 import com.wuzhizhan.ibatis.util.SqlMapUtils;
 import com.wuzhizhan.mybatis.dom.model.*;
@@ -58,11 +59,17 @@ public class IbatisStatementLineMarkerProvider extends RelatedItemLineMarkerProv
 
     private boolean isTarget(PsiElement element) {
         // 判断是否是目标对象 select | update | insert | delete
-        return element instanceof XmlTag && SqlMapUtils.isElementWithinMybatisFile(element) && isTargetType(element);
+        if (!(element instanceof XmlTag)) {
+            return false;
+        }
+
+        XmlTag xmlTag = (XmlTag) element;
+
+        DomElement domElement = DomManager.getDomManager(xmlTag.getProject()).getDomElement(xmlTag);
+        return isTargetType(domElement) && SqlMapUtils.isElementWithinMybatisFile(element);
     }
 
-    private boolean isTargetType(PsiElement element) {
-        DomElement domElement = DomUtil.getDomElement(element);
+    private boolean isTargetType(DomElement domElement) {
         for (Class<?> clazz : TARGET_TYPES) {
             if (clazz.isInstance(domElement))
                 return true;
